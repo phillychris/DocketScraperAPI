@@ -20,7 +20,7 @@ import re
 # Constants for MDJ Searches #
 MDJ_URL = "https://ujsportal.pacourts.us/DocketSheets/MDJ.aspx"
 
-# name
+# name ctl00$ctl00$ctl00$cphMain$cphDynamicContent$ddlSearchType
 SEARCH_TYPE_SELECT = (
     "ctl00$ctl00$ctl00$cphMain$cphDynamicContent" +
     "$ddlSearchType")
@@ -33,6 +33,20 @@ class SearchTypes:
 
     # visible text of select
     PARTICIPANT_NAME = "Participant Name"
+
+    # visible text of select
+    DATE_FILED = "Date Filed"
+
+    # Currently unused:
+    """
+	Citation Number
+	Organization
+	OTN
+	Parcel
+	Police Incident/Complaint Number
+	SID
+    """
+
 
 
 class DocketSearch:
@@ -145,6 +159,54 @@ class NameSearch:
     # value
     DATE_FILED_FROM = "01/01/1950"
 
+
+class DateSearch:
+    """ Constants for searching MDJ dockets by name """
+
+    # county ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$udsDateFiled$ddlCounty
+    COUNTY_SELECT = (
+        "ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$" +
+        "udsDateFiled$ddlCounty"
+    )
+
+    # court office ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$udsDateFiled$ddlCourtOffice
+    COURT_OFFICE_SELECT = (
+        "ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$" +
+        "udsDateFiled$ddlCourtOffice"
+    )
+
+    # date from ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$udsDateFiled$drpFiled$beginDateChildControl$DateTextBox
+    DATE_FILED_FROM_INPUT = (
+        "ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$" +
+        "udsDateFiled$drpFiled$beginDateChildControl$DateTextBox"
+    )
+
+    # date to ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$udsDateFiled$drpFiled$endDateChildControl$DateTextBox
+    DATE_FILED_TO_INPUT = (
+        "ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$" +
+        "udsDateFiled$drpFiled$endDateChildControl$DateTextBox"
+    )
+
+    # calendar to ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$udsDateFiled$drpFiled$beginDateChildControl$ToggleImage
+    CALENDAR_TOGGLE_BEFORE_DATE_FILED_TO_INPUT = (
+        "ctl00$ctl00$ctl00$cphMain$cphDynamicContent$cphSearchControls$" +
+        "udsDateFiled$drpFiled$beginDateChildControl$ToggleImage"
+    )
+
+    # name ctl00$ctl00$ctl00$cphMain$cphDynamicContent$btnSearch
+    SEARCH_BUTTON = (
+        "ctl00$ctl00$ctl00$cphMain$cphDynamicContent$btnSearch"
+    )
+
+    # id ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket
+    SEARCH_RESULTS_TABLE = (
+        "ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphResults_gvDocket"
+    )
+
+    # xpath
+    NO_RESULTS_FOUND = "//td[contains(text(), 'No Records Found')]"
+
+
 # Helper functions #
 
 
@@ -246,12 +308,24 @@ def parse_docket_search_results(search_results):
     """
     docket_numbers = search_results.find_elements_by_xpath(
         ".//td[2]")
+    xcourt_offices = search_results.find_elements_by_xpath(
+        ".//td[3]")
     captions = search_results.find_elements_by_xpath(
         ".//td[4]")
+    xfiling_dates = search_results.find_elements_by_xpath(
+        ".//td[5]")
+    xcounties = search_results.find_elements_by_xpath(
+        ".//td[6]")
     case_statuses = search_results.find_elements_by_xpath(
         ".//td[7]")
+    xparticipants = search_results.find_elements_by_xpath(
+        ".//td[8]")
     otns = search_results.find_elements_by_xpath(
         ".//td[9]")
+    xlotns = search_results.find_elements_by_xpath(
+        ".//td[10]")
+    xincident_numbers = search_results.find_elements_by_xpath(
+        ".//td[11]")
     dobs = search_results.find_elements_by_xpath(
         ".//td[12]"
     )
@@ -297,18 +371,30 @@ def parse_docket_search_results(search_results):
             "docket_number": dn.text,
             "docket_sheet_url": ds,
             "summary_url": su,
+            "court_office": co.text,
             "caption": cp.text,
+            "filing_date": fd.text,
+            "county": c.text,
             "case_status": cs.text,
+            "participant": p.text,
             "otn": otn.text,
+            "lotn": l.text,
+            "incident_number": i.text,
             "dob": dob.text
         }
-        for dn, ds, su, cp, cs, otn, dob in zip(
+        for dn, ds, su, co, cp, fd, c, cs, p, otn, l, i, dob in zip(
             docket_numbers,
             docket_sheet_urls,
             summary_urls,
+            xcourt_offices,
             captions,
+            xfiling_dates,
+            xcounties,
             case_statuses,
+            xparticipants,
             otns,
+            xlotns,
+            xincident_numbers,
             dobs,
         )
     ]
@@ -448,6 +534,192 @@ class MDJ:
         current_app.logger.info("found {} dockets".format(len(final_results)))
         return {"status": "success",
                 "dockets": final_results}
+
+
+    @staticmethod
+    def searchByDate(
+            county, court_office, start_date, end_date, driver, date_format="%m/%d/%Y"):
+        """
+        Search the MDJ site for criminal records by county, office, and dates
+
+        Args:
+            county (str): County in PA
+            court_office (str): An office in the provided county
+            start_date (str): Start date for search, in YYYY-MM-DD
+            end_date (str): Start date for search, in YYYY-MM-DD
+            date_format (str): Optional. Format for parsing `dob`. Default
+                is "%Y-%m-%d"
+        """
+        #current_app.logger.info("Searching by county, office, and date for MDJ dockets")
+        #current_app.logger.error("Starting searchByDate")
+
+        try:
+            start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        except ValueError:
+            current_app.logger.error("Unable to parse start_date")
+            return {"status": "Error: check your start_date format"}
+
+        try:
+            end_date = datetime.strptime(end_date, "%Y-%m-%d")
+        except ValueError:
+            current_app.logger.error("Unable to parse end_date")
+            return {"status": "Error: check your end_date format"}
+
+        driver.get(MDJ_URL)
+
+        # Select the Date Filed search
+        search_type_select = Select(
+            driver.find_element_by_name(SEARCH_TYPE_SELECT))
+        search_type_select.select_by_visible_text(SearchTypes.DATE_FILED)
+
+
+        # Enter a county to search and execute the search
+        try:
+            county_select = Select(WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located(
+                    (By.NAME, DateSearch.COUNTY_SELECT)
+                )
+            ))
+        except AssertionError:
+            current_app.logger.error("County Select not found.")
+            return {"status": "Error: County Select not found"}
+
+        #print(county_select)
+        #current_app.logger.error(dir(county_select))
+        #print(dir(county_select))
+
+        county_select.select_by_visible_text(county)
+
+        #current_app.logger.error('type(court_office): '+ str(type(court_office)))
+
+        # Enter a court_office to search and execute the search
+        try:
+            office_select = Select(WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable(
+                    (By.NAME, DateSearch.COURT_OFFICE_SELECT)
+                )
+            ))
+        except AssertionError:
+            current_app.logger.error("Court Office not found.")
+            return {"status": "Error: Court Office not found"}
+
+        #current_app.logger.error(dir(office_select))
+
+        office_select.select_by_value(court_office)
+
+        """ This isn't working, leaving value as '__/__/____'
+        date_filed_from_input = driver.find_element_by_name(
+            DateSearch.DATE_FILED_FROM_INPUT)
+        date_filed_from_input.send_keys(start_date.strftime("%m%d%Y"))
+        date_filed_from_input.send_keys(Keys.TAB)
+        """
+
+        date_filed_from_input = driver.find_element_by_name(
+            DateSearch.DATE_FILED_FROM_INPUT)
+        driver.execute_script("""
+            arguments[0].focus()
+            arguments[0].value = arguments[1]
+            arguments[0].blur()
+        """, date_filed_from_input, start_date.strftime("%m/%d/%Y"))
+
+
+        current_app.logger.error('start_date_set: '+ start_date.strftime("%m%d%Y"))
+
+        driver.find_element_by_name(
+            DateSearch.CALENDAR_TOGGLE_BEFORE_DATE_FILED_TO_INPUT).send_keys(
+                Keys.TAB)
+
+        date_filed_to_input = driver.find_element_by_name(
+            DateSearch.DATE_FILED_TO_INPUT)
+        date_filed_to_input.send_keys(end_date.strftime("%m%d%Y"))
+        date_filed_to_input.send_keys(Keys.TAB)
+
+        current_app.logger.error('end date set: '+ end_date.strftime("%m%d%Y"))
+
+        # Execute search
+        search_button = driver.find_element_by_name(DateSearch.SEARCH_BUTTON)
+        search_button.click()
+
+        current_app.logger.error('search button clicked.')
+
+        # Process results.
+        try:
+            current_app.logger.error("starting at: "+ str(datetime.now()))
+            search_xpath = ("//*[@id='{}'] | {}".format(
+                DateSearch.SEARCH_RESULTS_TABLE,
+                DateSearch.NO_RESULTS_FOUND
+            ))
+            search_results = WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, search_xpath))
+            )
+            current_app.logger.error("ending at: "+ str(datetime.now()))
+        except Exception as e:
+            current_app.logger.error("Exception in search results")
+            current_app.logger.error(e)
+
+            error_message = driver.find_element_by_id(
+                "ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cphSearchControls_udsDateFiled_DateRangePickerValidator1")
+
+            current_app.logger.error("date error: "+ error_message.text)
+
+            date_from = driver.find_element_by_name(DateSearch.DATE_FILED_FROM_INPUT)
+            current_app.logger.error("date_from: "+ date_from.get_attribute('value'))
+
+            date_to = driver.find_element_by_name(DateSearch.DATE_FILED_TO_INPUT)
+            current_app.logger.error("date_to: "+ date_to.get_attribute('value'))
+
+            current_app.logger.error("search_xpath: "+ search_xpath)
+
+            return {"status": "Unknown Error."}
+        except AssertionError:
+            return {"status": "Error: Could not find search results."}
+
+        #current_app.logger.error('search_results: '+ search_results.text)
+
+        if "No Records Found" in search_results.text:
+            return {"status": "No Dockets Found"}
+
+        final_results = parse_docket_search_results(search_results)
+
+        #current_app.logger.error('final_results: '+ final_results)
+
+        while next_button_enabled(driver):
+            current_active_page = get_current_active_page(driver)
+            current_app.logger.error('current_active_page: '+ str(current_active_page))
+            #current_app.logger.error(final_results)
+            next_active_page_xpath = (
+                "//span[@id='ctl00_ctl00_ctl00_cphMain_cphDynamicContent" +
+                "_cstPager']/div/a[@style='text-decoration:none;' and" +
+                " contains(text(), '{}')]"
+            ).format(current_active_page + 1)
+
+            # click the next button to get the next page of results
+            get_next_button(driver).click()
+
+            # wait until the next page number is activated, so we know
+            # that the next results have loaded.
+            WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, next_active_page_xpath)
+                )
+            )
+
+            # Get the results from this next page.
+
+            search_results = WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located(
+                    (By.ID, DateSearch.SEARCH_RESULTS_TABLE))
+            )
+
+            final_results.extend(parse_docket_search_results(search_results))
+
+        current_app.logger.info("Completed searching by name for MDJ Dockets")
+        current_app.logger.info("found {} dockets".format(len(final_results)))
+        return {"status": "success",
+                "dockets": final_results}
+
+
 
     @staticmethod
     def lookupDocket(docket_number, driver):

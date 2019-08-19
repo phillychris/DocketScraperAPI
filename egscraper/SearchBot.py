@@ -11,7 +11,7 @@ from flask import current_app
 # Defaults for the webdriver #
 log_path = os.path.join(os.getcwd(), "logs", "geckodriver.log")  # TODO Remove
 options = Options()
-options.headless = True 
+options.headless = True
 options.add_argument("--window-size=800,1400")
 options.log.level = "error"
 
@@ -23,6 +23,11 @@ def catch_webdriver_exception(func):
         obj = [a for a in args][0]
         try:
             return func(*args, **kwargs)
+        except Exception as e:
+            obj.quit()
+            current_app.logger.error("Exception: Unknown")
+            current_app.logger.error(e)
+            return {"status": "Unknown Error."}
         except WebDriverException:
             obj.quit()
             current_app.logger.error("Exception: Web driver error")
@@ -31,11 +36,6 @@ def catch_webdriver_exception(func):
             obj.quit()
             current_app.logger.error("Exception: Timeout Error")
             return {"status": "Timeout. No dockets found."}
-        except Exception as e:
-            obj.quit()
-            current_app.logger.error("Exception: Unknown")
-            current_app.logger.error(e)
-            return {"status": "Unknown Error."}
     return wrapper
 
 
@@ -73,6 +73,30 @@ class SearchBot:
         if court == "MDJ" or court == "both":
             mdj_result = MDJ.searchName(
                 first_name, last_name, self.get_driver(), dob)
+            if mdj_result["status"] == "success":
+                results = results + mdj_result["dockets"]
+        self.quit()
+        if len(results) == 0:
+            return {"status": "No Dockets Found"}
+        return {"status": "success", "dockets": results}
+
+    # MDJ Only for now
+    @catch_webdriver_exception
+    def lookup_by_date(self, county, court_office, start_date, end_date, court="both"):
+        results = []
+        if court not in ["CP", "MDJ", "both"]:
+            self.quit()
+            return {"status": "Error: did not recognize court."}
+        """
+        if court == "CP" or court == "both":
+            cp_result = CommonPleas.searchName(
+                first_name, last_name, self.get_driver(), dob)
+            if cp_result["status"] == "success":
+                results = results + cp_result["dockets"]
+        """
+        if court == "MDJ" or court == "both":
+            mdj_result = MDJ.searchByDate(
+                county, court_office, start_date, end_date, self.get_driver())
             if mdj_result["status"] == "success":
                 results = results + mdj_result["dockets"]
         self.quit()

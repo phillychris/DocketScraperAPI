@@ -73,6 +73,27 @@ def lookupMany():
     results = searchbot.lookup_multiple_dockets(docket_numbers)
     return jsonify({"status": "success", "dockets": results})
 
+# MDJ Only for now
+@app.route("/lookupByDate/<court>", methods=["POST"])
+def lookupByDate(court):
+
+    try:
+        county = request.json["county"]
+        court_office = request.json["court_office"]
+        start_date = request.json["start_date"]
+        end_date = request.json["end_date"]
+    except KeyError:
+        app.logger.error("Request to lookupByDate missing parameter")
+        return jsonify(
+            {"status": "Error: Missing required parameter."}
+        )
+    except Exception as e:
+        app.logger.error("Error:", e)
+
+    searchbot = SearchBot()
+    return jsonify(
+        searchbot.lookup_by_date(county, court_office, start_date, end_date, court))
+
 
 @app.route("/<path:path>", methods=["GET", "POST"])
 def catchall_route(path):
