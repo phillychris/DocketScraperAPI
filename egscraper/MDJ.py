@@ -547,8 +547,8 @@ class MDJ:
             court_office (str): An office in the provided county
             start_date (str): Start date for search, in YYYY-MM-DD
             end_date (str): Start date for search, in YYYY-MM-DD
-            date_format (str): Optional. Format for parsing `dob`. Default
-                is "%Y-%m-%d"
+            date_format (str): Optional. Format for parsing `start_date` and
+                `end_date`. Default is "%Y-%m-%d"
         """
         #current_app.logger.info("Searching by county, office, and date for MDJ dockets")
         #current_app.logger.error("Starting searchByDate")
@@ -718,6 +718,73 @@ class MDJ:
         current_app.logger.info("found {} dockets".format(len(final_results)))
         return {"status": "success",
                 "dockets": final_results}
+
+
+    @staticmethod
+    def getCourtOffices(
+            county, driver, date_format="%m/%d/%Y"):
+        """
+        Search the MDJ site for criminal records by county, office, and dates
+
+        Args:
+            county (str): County in PA
+            date_format (str): Optional. Format for parsing `dob`. Default
+                is "%Y-%m-%d"
+        """
+
+        driver.get(MDJ_URL)
+
+        # Select the Date Filed search
+        search_type_select = Select(
+            driver.find_element_by_name(SEARCH_TYPE_SELECT))
+        search_type_select.select_by_visible_text(SearchTypes.DATE_FILED)
+
+
+        # Enter a county to search and execute the search
+        try:
+            county_select = Select(WebDriverWait(driver, 15).until(
+                EC.presence_of_element_located(
+                    (By.NAME, DateSearch.COUNTY_SELECT)
+                )
+            ))
+        except AssertionError:
+            current_app.logger.error("County Select not found.")
+            return {"status": "Error: County Select not found"}
+
+        #print(county_select)
+        #current_app.logger.error(dir(county_select))
+        #print(dir(county_select))
+
+        county_select.select_by_visible_text(county)
+
+        #current_app.logger.error('type(court_office): '+ str(type(court_office)))
+
+        # Enter a court_office to search and execute the search
+        try:
+            office_select = Select(WebDriverWait(driver, 15).until(
+                EC.element_to_be_clickable(
+                    (By.NAME, DateSearch.COURT_OFFICE_SELECT)
+                )
+            ))
+        except AssertionError:
+            current_app.logger.error("Court Office not found.")
+            return {"status": "Error: Court Office not found"}
+
+        #date_to = driver.find_element_by_name(DateSearch.DATE_FILED_TO_INPUT)
+        #current_app.logger.error("office_select: "+ office_select.options)
+        offices = {}
+        for o in office_select.options:
+            #current_app.logger.error(dir(o))
+            #break
+            if o.get_attribute('value') != '':
+                #current_app.logger.error(o.get_attribute('value')+': '+o.text)
+                offices[o.get_attribute('value')] = o.text
+
+        #current_app.logger.error(dir(office_select))
+
+        current_app.logger.info("Got Court Offices for {} County".format(county))
+        current_app.logger.info("found {} offices".format(len(offices)))
+        return {"status": "success", "offices": offices}
 
 
 

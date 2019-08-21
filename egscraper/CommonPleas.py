@@ -60,6 +60,13 @@ class DocketSearch:
         "Control_resultsPanel"
     )
 
+    # id
+    NO_SEARCH_RESULTS_TABLE = (
+        "ctl00_ctl00_ctl00_cphMain_cphDynamicContent_cph" +
+        "DynamicContent_docketNumberCriteriaControl_searchResultsGrid" +
+        "Control_noResultsPanel"
+    )
+
     # xpath
     NO_RESULTS_FOUND = (
         "//td[contains(text(), 'No Cases Found')]"
@@ -193,6 +200,8 @@ def parse_docket_search_results(search_results):
     """ Given a table of docket search results, return a list of dicts of key
     information
     """
+
+    """
     docket_numbers = search_results.find_elements_by_xpath(
         "//span[contains(@id, 'docketNumberLabel')]")
     # docket_sheet_urls = search_results.find_elements_by_xpath(
@@ -207,6 +216,29 @@ def parse_docket_search_results(search_results):
             "//span[contains(@id, 'otnLabel')]")
     dobs = search_results.find_elements_by_xpath(
         "//span[contains(@id, 'DobLabel')]")
+    """
+
+    docket_numbers = search_results.find_elements_by_xpath(
+        ".//td[2]")
+    captions = search_results.find_elements_by_xpath(
+        ".//td[3]")
+    xfiling_dates = search_results.find_elements_by_xpath(
+        ".//td[4]")
+    xcounties = search_results.find_elements_by_xpath(
+        ".//td[5]")
+    xparties = search_results.find_elements_by_xpath(
+        ".//td[6]")
+    case_statuses = search_results.find_elements_by_xpath(
+        ".//td[7]")
+    otns = search_results.find_elements_by_xpath(
+        ".//td[8]")
+    xlotns = search_results.find_elements_by_xpath(
+        ".//td[9]")
+    xincident_numbers = search_results.find_elements_by_xpath(
+        ".//td[10]")
+    dobs = search_results.find_elements_by_xpath(
+        ".//td[11]"
+    )
 
     docket_sheet_urls = []
     for docket in docket_numbers:
@@ -244,6 +276,7 @@ def parse_docket_search_results(search_results):
         docket_numbers, docket_sheet_urls, summary_urls,
         captions, case_statuses, dobs)))) == 1
 
+    """
     dockets = [
         {
             "docket_number": dn.text,
@@ -262,6 +295,37 @@ def parse_docket_search_results(search_results):
             case_statuses,
             otns,
             dobs
+        )
+    ]
+    """
+    dockets = [
+        {
+            "docket_number": dn.text,
+            "docket_sheet_url": ds,
+            "summary_url": su,
+            "caption": cp.text,
+            "filing_date": fd.text,
+            "county": c.text,
+            "case_status": cs.text,
+            "party": p.text,
+            "otn": otn.text,
+            "lotn": l.text,
+            "incident_number": i.text,
+            "dob": dob.text
+        }
+        for dn, ds, su, cp, fd, c, cs, p, otn, l, i, dob in zip(
+            docket_numbers,
+            docket_sheet_urls,
+            summary_urls,
+            captions,
+            xfiling_dates,
+            xcounties,
+            case_statuses,
+            xparties,
+            otns,
+            xlotns,
+            xincident_numbers,
+            dobs,
         )
     ]
     return dockets
@@ -506,4 +570,134 @@ class CommonPleas:
             docket_lookup = CommonPleas.lookupDocket(docket_num, driver=driver)
             if docket_lookup["status"] == "success":
                 results.append(docket_lookup["docket"])
+        return results
+
+    @staticmethod
+    def lookupMultipleDocketsEfficiently(docket_nums, driver):
+        """
+        Lookup information about a single docket
+
+        If the search somehow returns more than one docket given the
+        docket_number, the search will return just the first docket.
+
+        Args:
+            docket_number (str): Docket number like CP-45-CR-1234567-2019
+        """
+        results = {}
+
+        docket_number = docket_nums[1]
+
+        driver.get(COMMON_PLEAS_URL)
+
+        # Don't need to wait for anything to load, docket number is the default
+        search_type_select = Select(
+            driver.find_element_by_name(SEARCH_TYPE_SELECT))
+        search_type_select.select_by_visible_text(SEARCH_TYPES.docket_number)
+
+        current_app.logger.info(
+            "Searching by docket number for common pleas docket")
+
+        remove_results_js = """
+var element = document.querySelector("#{}");
+if (element)
+    element.parentNode.removeChild(element);
+""".format(DocketSearch.SEARCH_RESULTS_TABLE)
+
+        remove_no_results_js = """
+var element = document.querySelector("#{}");
+if (element)
+    element.parentNode.removeChild(element);
+""".format(DocketSearch.NO_SEARCH_RESULTS_TABLE)
+
+        #current_app.logger.error(remove_results_js)
+
+        #current_app.logger.error(remove_no_results_js)
+
+        for docket_number in docket_nums:
+
+            current_app.logger.info("Checking docket: {}".format(docket_number))
+
+            # Delete results if exists
+            driver.execute_script(remove_results_js)
+
+            # Delete no-results if exists
+            driver.execute_script(remove_no_results_js)
+
+            docket_dict = parse_docket_number(docket_number)
+
+            #current_app.logger.error(str(docket_dict))
+
+            if docket_dict is None:
+                current_app.logger.error("Caught malformed docket number: {}".format(docket_number))
+                results[docket_number] = {"error": "Error. Malformed docket number: {}".format(docket_number)}
+                continue
+
+            # Fill in docket information
+            try:
+                court_select = Select(
+                    driver.find_element_by_name(DocketSearch.COURT_TYPE_SELECT)
+                )
+                court_select.select_by_visible_text(docket_dict["court"])
+            except Exception as e:
+                results[docket_number] = {"error": "Error. Invalid court type in docket number: {}".format(docket_number)}
+                continue
+
+            county_input = driver.find_element_by_name(DocketSearch.COUNTY_INPUT)
+            county_input.clear()
+            county_input.send_keys(docket_dict["county"])
+
+            try:
+                docket_type_select = Select(
+                    driver.find_element_by_name(DocketSearch.DOCKET_TYPE_SELECT)
+                )
+                docket_type_select.select_by_visible_text(docket_dict["docket_type"])
+            except Exception as e:
+                results[docket_number] = {"error": "Error. Invalid docket type in docket number: {}".format(docket_number)}
+                continue
+
+            docket_index_input = driver.find_element_by_name(
+                DocketSearch.DOCKET_INDEX_INPUT)
+            docket_index_input.clear()
+            docket_index_input.send_keys(docket_dict["docket_index"])
+
+            year_input = driver.find_element_by_name(DocketSearch.YEAR_INPUT)
+            year_input.clear()
+            year_input.send_keys(docket_dict["year"])
+
+            search_button = driver.find_element_by_name(DocketSearch.SEARCH_BUTTON)
+            search_button.click()
+
+            # Delete
+
+            # Wait for results
+            try:
+                search_xpath = "//*[@id='{}'] | {}".format(
+                    DocketSearch.SEARCH_RESULTS_TABLE,
+                    DocketSearch.NO_RESULTS_FOUND
+                )
+                search_results = WebDriverWait(driver, 15).until(
+                    EC.presence_of_element_located(
+                        (By.XPATH, search_xpath))
+                )
+
+                if "No Cases Found" in search_results.text:
+                    results[docket_number] = {"error": "No Dockets Found for: {}".format(docket_number)}
+                    continue
+
+                # Collect results
+                response = parse_docket_search_results(search_results)
+                if len(response) != 1:
+                    current_app.logger.warning(
+                        "While searching for {}, ".format(docket_number)
+                    )
+                    current_app.logger.warning(
+                        "I found {} dockets, instead of 1.".format(len(response)))
+                response_dict = response[0]
+            except TimeoutException:
+                results[docket_number] = {"error": "Timeout when searching for: {}".format(docket_number)}
+                continue
+
+            results[docket_number] = response_dict
+
+        current_app.logger.info("Completed search for common pleas docket.")
         return results

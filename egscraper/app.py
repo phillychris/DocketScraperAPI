@@ -73,6 +73,20 @@ def lookupMany():
     results = searchbot.lookup_multiple_dockets(docket_numbers)
     return jsonify({"status": "success", "dockets": results})
 
+
+@app.route("/lookupMultipleCPDocketsEfficiently", methods=["POST"])
+def lookupManyCP():
+    """ Route for looking up many docket numbers."""
+    try:
+        docket_numbers = request.json["docket_numbers"]
+    except KeyError:
+        return jsonify(
+            {"status": "Error. Missing docket_numbers parameter."}
+        )
+    searchbot = SearchBot()
+    results = searchbot.lookup_multiple_cp_dockets_efficiently(docket_numbers)
+    return jsonify({"status": "success", "dockets": results})
+
 # MDJ Only for now
 @app.route("/lookupByDate/<court>", methods=["POST"])
 def lookupByDate(court):
@@ -93,6 +107,37 @@ def lookupByDate(court):
     searchbot = SearchBot()
     return jsonify(
         searchbot.lookup_by_date(county, court_office, start_date, end_date, court))
+
+
+# MDJ Only for now
+@app.route("/getCourtOffices/<court>", methods=["POST"])
+def getCourtOffices(court):
+
+    #app.logger.error("In getCourtOffices")
+
+    try:
+        app.logger.error("county: "+request.json["county"])
+        county = request.json["county"]
+    except KeyError:
+        app.logger.error("Request to lookupByDate missing parameter")
+        return jsonify(
+            {"status": "Error: Missing required parameter."}
+        )
+    except Exception as e:
+        app.logger.error("Error:", e)
+        return jsonify(
+            {"status": "Error: {}".format(e)}
+        )
+
+    # ToDo: Make sure county is invalid
+
+    #app.logger.error("Still in getCourtOffices")
+
+    searchbot = SearchBot()
+    return jsonify(
+        searchbot.get_court_offices_by_county(county, court))
+
+
 
 
 @app.route("/<path:path>", methods=["GET", "POST"])

@@ -104,6 +104,32 @@ class SearchBot:
             return {"status": "No Dockets Found"}
         return {"status": "success", "dockets": results}
 
+    # MDJ Only for now
+    @catch_webdriver_exception
+    def get_court_offices_by_county(self, county, court="both"):
+
+        #current_app.logger.error("In get_court_offices_by_county")
+
+        results = {}
+        if court not in ["CP", "MDJ", "both"]:
+            self.quit()
+            return {"status": "Error: did not recognize court."}
+        """
+        if court == "CP" or court == "both":
+            cp_result = CommonPleas.searchName(
+                first_name, last_name, self.get_driver(), dob)
+            if cp_result["status"] == "success":
+                results = results + cp_result["dockets"]
+        """
+        if court == "MDJ" or court == "both":
+            mdj_result = MDJ.getCourtOffices(county, self.get_driver())
+            if mdj_result["status"] == "success":
+                results = mdj_result["offices"]
+        self.quit()
+        if len(results) == 0:
+            return {"status": "No Dockets Found"}
+        return {"status": "success", "offices": results}
+
     @catch_webdriver_exception
     def lookup_docket(self, docket_number, court):
         """
@@ -141,3 +167,14 @@ class SearchBot:
         results = cp_results + mdj_results
         self.quit()
         return results
+
+    @catch_webdriver_exception
+    def lookup_multiple_cp_dockets_efficiently(self, docket_numbers):
+        """
+        Lookup information for multiple CP docket numbers without page refresh.
+        """
+
+        cp_results = CommonPleas.lookupMultipleDocketsEfficiently(
+            docket_numbers, driver=self.get_driver())
+        self.quit()
+        return cp_results
