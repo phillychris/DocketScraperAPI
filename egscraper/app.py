@@ -87,6 +87,21 @@ def lookupManyCP():
     results = searchbot.lookup_multiple_cp_dockets_efficiently(docket_numbers)
     return jsonify({"status": "success", "dockets": results})
 
+@app.route("/lookupMultipleMDJDocketsEfficiently", methods=["POST"])
+def lookupManyMDJ():
+    """ Route for looking up many docket numbers."""
+    try:
+        docket_numbers = request.json["docket_numbers"]
+    except KeyError:
+        return jsonify(
+            {"status": "Error. Missing docket_numbers parameter."}
+        )
+    #searchbot = SearchBot()
+    #results = searchbot.lookup_multiple_cp_dockets_efficiently(docket_numbers)
+    #return jsonify({"status": "success", "dockets": results})
+    return jsonify({"status": "not-yet-implemented", "dockets": []})
+
+
 # MDJ Only for now
 @app.route("/lookupByDate/<court>", methods=["POST"])
 def lookupByDate(court):
