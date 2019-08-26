@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 from .SearchBot import SearchBot
+from .MDJ import MDJ_URL
+from .CommonPleas import COMMON_PLEAS_URL
 import os
 import logging
 
@@ -152,6 +154,27 @@ def getCourtOffices(court):
     return jsonify(
         searchbot.get_court_offices_by_county(county, court))
 
+
+@app.route("/htmlPassthrough/<court>", methods=["GET"])
+def htmlPassthrough(court):
+    if court == "CP":
+        url = COMMON_PLEAS_URL
+    elif court == "MDJ":
+        url = MDJ_URL
+    elif court is not None:
+        return "<h3>Error: {} is not a valid court</h3>".format(court)
+
+    #return "<h3>URL: {}</h3>".format(url)
+
+    searchbot = SearchBot()
+
+    driver = searchbot.get_driver()
+
+    driver.get(url)
+
+    #app.logger.error(driver)
+
+    return driver.page_source
 
 
 
