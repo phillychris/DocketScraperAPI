@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 import re
 from flask import current_app
-
+from time import sleep
 
 # CONSTANTS for the Common Pleas site #
 COMMON_PLEAS_URL = "https://ujsportal.pacourts.us/DocketSheets/CP.aspx"
@@ -698,6 +698,8 @@ if (element)
                 continue
 
             results[docket_number] = response_dict
+
+            sleep(2)
 
         current_app.logger.info("Completed search for common pleas docket.")
         return results
