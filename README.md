@@ -2,6 +2,32 @@
 
 A simple REST API for using a headless browser to collect docket information from the Pennsylvania Courts.
 
+## Example scripts
+
+There are to example scripts in the `scripts/` directory:
+* save_meta.py : This calls the API to get docket meta data and stores each as a JSON file, example below.
+* save_docket.py: This goes through the JSON stored in `save_meta.py` and downloads the docket PDF.
+
+**Example JSON from `save_meta.py` saved as `CP-51-CR-0000001-2019.json`**
+
+```
+{
+  "caption": "Comm. v. Walker, Sidney D.",
+  "case_status": "Active",
+  "county": "Philadelphia",
+  "dob": "10/12/1994",
+  "docket_number": "CP-51-CR-0000001-2019",
+  "docket_sheet_url": "https://ujsportal.pacourts.us/DocketSheets/CPReport.ashx?docketNumber=CP-51-CR-0000001-2019&dnh=Zg9tMFgQTeXKgdk7t5%2fWIg%3d%3d",
+  "filing_date": "1/2/2019 8:08:00 AM",
+  "incident_number": "1806051343",
+  "lotn": "",
+  "otn": "U1452124",
+  "party": "Walker, Sidney D.",
+  "summary_url": "https://ujsportal.pacourts.us/DocketSheets/CourtSummaryReport.ashx?docketNumber=CP-51-CR-0000001-2019&dnh=Zg9tMFgQTeXKgdk7t5%2fWIg%3d%3d",
+  "created_at": "2019-08-23 19:01:20.846138"
+}
+```
+
 ## Using the API, if you've got it running already
 
 See `openapi.yaml` for full details.
