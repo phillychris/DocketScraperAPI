@@ -699,7 +699,7 @@ if (element)
 
             results[docket_number] = response_dict
 
-            sleep(2)
+            sleep(1)
 
         current_app.logger.info("Completed search for common pleas docket.")
         return results
