@@ -1,0 +1,406 @@
+{
+    "counties": [
+        {
+            "common_pleas": "01",
+            "county": "Adams",
+            "magisterial": "51",
+            "priority": 3
+        },
+        {
+            "common_pleas": "02",
+            "county": "Allegheny",
+            "magisterial": "05",
+            "priority": 3
+        },
+        {
+            "common_pleas": "03",
+            "county": "Armstrong",
+            "magisterial": "33",
+            "priority": 3
+        },
+        {
+            "common_pleas": "04",
+            "county": "Beaver",
+            "magisterial": "36",
+            "priority": 3
+        },
+        {
+            "common_pleas": "05",
+            "county": "Bedford",
+            "magisterial": "57",
+            "priority": 3
+        },
+        {
+            "common_pleas": "06",
+            "county": "Berks",
+            "magisterial": "23",
+            "priority": 3
+        },
+        {
+            "common_pleas": "07",
+            "county": "Blair",
+            "magisterial": "24",
+            "priority": 3
+        },
+        {
+            "common_pleas": "08",
+            "county": "Bradford",
+            "magisterial": "42",
+            "priority": 3
+        },
+        {
+            "common_pleas": "09",
+            "county": "Bucks",
+            "magisterial": "07",
+            "priority": 2
+        },
+        {
+            "common_pleas": "10",
+            "county": "Butler",
+            "magisterial": "50",
+            "priority": 3
+        },
+        {
+            "common_pleas": "11",
+            "county": "Cambria",
+            "magisterial": "47",
+            "priority": 3
+        },
+        {
+            "common_pleas": "12",
+            "county": "Cameron",
+            "magisterial": "59",
+            "priority": 3
+        },
+        {
+            "common_pleas": "13",
+            "county": "Carbon",
+            "magisterial": "56",
+            "priority": 3
+        },
+        {
+            "common_pleas": "14",
+            "county": "Centre",
+            "magisterial": "49",
+            "priority": 3
+        },
+        {
+            "common_pleas": "15",
+            "county": "Chester",
+            "magisterial": "15",
+            "priority": 2
+        },
+        {
+            "common_pleas": "16",
+            "county": "Clarion",
+            "magisterial": "18",
+            "priority": 3
+        },
+        {
+            "common_pleas": "17",
+            "county": "Clearfield",
+            "magisterial": "46",
+            "priority": 3
+        },
+        {
+            "common_pleas": "18",
+            "county": "Clinton",
+            "magisterial": "25",
+            "priority": 3
+        },
+        {
+            "common_pleas": "19",
+            "county": "Columbia",
+            "magisterial": "26",
+            "priority": 3
+        },
+        {
+            "common_pleas": "20",
+            "county": "Crawford",
+            "magisterial": "30",
+            "priority": 3
+        },
+        {
+            "common_pleas": "21",
+            "county": "Cumberland",
+            "magisterial": "09",
+            "priority": 3
+        },
+        {
+            "common_pleas": "22",
+            "county": "Dauphin",
+            "magisterial": "12",
+            "priority": 3
+        },
+        {
+            "common_pleas": "23",
+            "county": "Delaware",
+            "magisterial": "32",
+            "priority": 2
+        },
+        {
+            "common_pleas": "24",
+            "county": "Elk",
+            "magisterial": "59",
+            "priority": 3
+        },
+        {
+            "common_pleas": "25",
+            "county": "Erie",
+            "magisterial": "06",
+            "priority": 3
+        },
+        {
+            "common_pleas": "26",
+            "county": "Fayette",
+            "magisterial": "14",
+            "priority": 3
+        },
+        {
+            "common_pleas": "27",
+            "county": "Forest",
+            "magisterial": "37",
+            "priority": 3
+        },
+        {
+            "common_pleas": "28",
+            "county": "Franklin",
+            "magisterial": "39",
+            "priority": 3
+        },
+        {
+            "common_pleas": "29",
+            "county": "Fulton",
+            "magisterial": "39",
+            "priority": 3
+        },
+        {
+            "common_pleas": "30",
+            "county": "Greene",
+            "magisterial": "13",
+            "priority": 3
+        },
+        {
+            "common_pleas": "31",
+            "county": "Huntingdon",
+            "magisterial": "20",
+            "priority": 3
+        },
+        {
+            "common_pleas": "32",
+            "county": "Indiana",
+            "magisterial": "40",
+            "priority": 3
+        },
+        {
+            "common_pleas": "33",
+            "county": "Jefferson",
+            "magisterial": "54",
+            "priority": 3
+        },
+        {
+            "common_pleas": "34",
+            "county": "Juniata",
+            "magisterial": "41",
+            "priority": 3
+        },
+        {
+            "common_pleas": "35",
+            "county": "Lackawanna",
+            "magisterial": "45",
+            "priority": 3
+        },
+        {
+            "common_pleas": "36",
+            "county": "Lancaster",
+            "magisterial": "02",
+            "priority": 3
+        },
+        {
+            "common_pleas": "37",
+            "county": "Lawrence",
+            "magisterial": "53",
+            "priority": 3
+        },
+        {
+            "common_pleas": "38",
+            "county": "Lebanon",
+            "magisterial": "52",
+            "priority": 3
+        },
+        {
+            "common_pleas": "39",
+            "county": "Lehigh",
+            "magisterial": "31",
+            "priority": 3
+        },
+        {
+            "common_pleas": "40",
+            "county": "Luzerne",
+            "magisterial": "11",
+            "priority": 3
+        },
+        {
+            "common_pleas": "41",
+            "county": "Lycoming",
+            "magisterial": "29",
+            "priority": 3
+        },
+        {
+            "common_pleas": "42",
+            "county": "McKean",
+            "magisterial": "48",
+            "priority": 3
+        },
+        {
+            "common_pleas": "43",
+            "county": "Mercer",
+            "magisterial": "35",
+            "priority": 3
+        },
+        {
+            "common_pleas": "44",
+            "county": "Mifflin",
+            "magisterial": "58",
+            "priority": 3
+        },
+        {
+            "common_pleas": "45",
+            "county": "Monroe",
+            "magisterial": "43",
+            "priority": 3
+        },
+        {
+            "common_pleas": "46",
+            "county": "Montgomery",
+            "magisterial": "38",
+            "priority": 2
+        },
+        {
+            "common_pleas": "47",
+            "county": "Montour",
+            "magisterial": "26",
+            "priority": 3
+        },
+        {
+            "common_pleas": "48",
+            "county": "Northampton",
+            "magisterial": "03",
+            "priority": 3
+        },
+        {
+            "common_pleas": "49",
+            "county": "Northumberland",
+            "magisterial": "08",
+            "priority": 3
+        },
+        {
+            "common_pleas": "50",
+            "county": "Perry",
+            "magisterial": "41",
+            "priority": 3
+        },
+        {
+            "common_pleas": "51",
+            "county": "Philadelphia",
+            "magisterial": "01",
+            "priority": 1
+        },
+        {
+            "common_pleas": "52",
+            "county": "Pike",
+            "magisterial": "60",
+            "priority": 3
+        },
+        {
+            "common_pleas": "53",
+            "county": "Potter",
+            "magisterial": "55",
+            "priority": 3
+        },
+        {
+            "common_pleas": "54",
+            "county": "Schuylkill",
+            "magisterial": "21",
+            "priority": 3
+        },
+        {
+            "common_pleas": "55",
+            "county": "Snyder",
+            "magisterial": "17",
+            "priority": 3
+        },
+        {
+            "common_pleas": "56",
+            "county": "Somerset",
+            "magisterial": "16",
+            "priority": 3
+        },
+        {
+            "common_pleas": "57",
+            "county": "Sullivan",
+            "magisterial": "44",
+            "priority": 3
+        },
+        {
+            "common_pleas": "58",
+            "county": "Susquehanna",
+            "magisterial": "34",
+            "priority": 3
+        },
+        {
+            "common_pleas": "59",
+            "county": "Tioga",
+            "magisterial": "04",
+            "priority": 3
+        },
+        {
+            "common_pleas": "60",
+            "county": "Union",
+            "magisterial": "17",
+            "priority": 3
+        },
+        {
+            "common_pleas": "61",
+            "county": "Venango",
+            "magisterial": "28",
+            "priority": 3
+        },
+        {
+            "common_pleas": "62",
+            "county": "Warren",
+            "magisterial": "37",
+            "priority": 3
+        },
+        {
+            "common_pleas": "63",
+            "county": "Washington",
+            "magisterial": "27",
+            "priority": 3
+        },
+        {
+            "common_pleas": "64",
+            "county": "Wayne",
+            "magisterial": "22",
+            "priority": 3
+        },
+        {
+            "common_pleas": "65",
+            "county": "Westmoreland",
+            "magisterial": "10",
+            "priority": 3
+        },
+        {
+            "common_pleas": "66",
+            "county": "Wyoming",
+            "magisterial": "44",
+            "priority": 3
+        },
+        {
+            "common_pleas": "67",
+            "county": "York",
+            "magisterial": "19",
+            "priority": 3
+        }
+    ]
+}
