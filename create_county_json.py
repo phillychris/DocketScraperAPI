@@ -18,6 +18,21 @@ county_list = ['Chester', 'Clarion', 'Berks', 'Blair', 'Clinton', 'Columbia', 'C
 
 county_dict_list = []
 
+priority_dict = {
+    'Philadelphia': 1,
+    'Bucks': 2,
+    'Chester': 2,
+    'Delaware': 2,
+    'Montgomery': 2
+}
+
+finished_dict = {
+    'Philadelphia': True,
+    'Bucks': True,
+    'Chester': True,
+    'Delaware': True,
+    'Montgomery': True
+}
 # Header row: common_pleas,county,magisterial
 with open('references/county_lookup_cp.csv', newline='') as csvfile:
     counties = csv.DictReader(csvfile)
@@ -33,10 +48,11 @@ with open('references/county_lookup_cp.csv', newline='') as csvfile:
 
 for county_dict in county_dict_list:
 
-    county_dict['priority'] = 3
+    county_dict['priority'] = priority_dict[county_dict['county']] if county_dict['county'] in priority_dict else 3
+    county_dict['backlog_2018_finished'] = finished_dict[county_dict['county']] if county_dict['county'] in finished_dict else False
+    county_dict['backlog_2019_finished'] = finished_dict[county_dict['county']] if county_dict['county'] in finished_dict else False
 
 #print(county_dict_list)
-
 
 filename = 'references/county.json'
 file = open(filename, 'w')
