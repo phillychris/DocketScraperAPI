@@ -30,14 +30,14 @@ regex,county_code,County
 13[0-9]{3},13,Greene
 14[0-9]{3},14,Fayette
 16[0-9]{3},16,Somerset
-1730[34]{1},17,Synder
+1730[34]{1},17,Snyder
 1730[12]{1},17,Union
 19[0-9]{3},19,York
 20[0-9]{3},20,Huntingdon
 21[0-9]{3},21,Schuylkill
 22[0-9]{3},22,Wayne
 26[0-9]{3},26,Montour
-27[0-9]{3},27,Washingon
+27[0-9]{3},27,Washington
 28[0-9]{3},28,Venango
 29[0-9]{3},29,Lycoming
 31[0-9]{3},31,Lehigh
